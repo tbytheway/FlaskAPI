@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS, cross_origin
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.sqlite')
@@ -33,13 +35,13 @@ def home():
 def add_movies():
     title = request.json['title']
     actors = request.json['actors']
-    new_movies = Movies(title, actors)
-    db.session.add(new_movies)
+    new_movie = Movies(title, actors)
+    db.session.add(new_movie)
     db.session.commit()
 
-    movies = Movies.query.get(new_movies.id)
+    movies = Movies.query.get(new_movie.id)
 
-    return movies_schema.jsonify(movies)
+    return movie_schema.jsonify(movies)
 
 @app.route("/movies", methods=["GET"])
 def get_movie():
@@ -70,7 +72,7 @@ def movies_delete(id):
     db.session.delete(movies)
     db.session.commit()
 
-    return "Movies were successfully deleted"
+    return "Movie was successfully deleted"
 
 
 
